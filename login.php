@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['username'] = $username;
             $_SESSION['role'] = $row['role'];
 
-           
+           // preveri ce si asmin in preusmerja
             if ($row['role'] === 'admin') {
                 header("Location: admin.php");
             } else {
