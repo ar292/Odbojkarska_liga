@@ -10,7 +10,7 @@ if (!isset($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// Osnovni podatki o igralcu
+// Os podatki o igralcu
 $sql = "SELECT p.name, p.position, p.height, p.max_spike_reach, p.max_block_reach, p.weight, p.image, c.name AS club
         FROM players p
         LEFT JOIN clubs c ON p.id_c = c.id_c
@@ -26,7 +26,7 @@ if (!$player) {
 
 echo "<h2>" . htmlspecialchars($player['name']) . "</h2>";
 
-// Začetek tabele z osnovnimi podatki
+// tabela z podatki od zgori
 echo "<table border='1' cellpadding='5'>";
 echo "<tr><td><strong>Pozicija:</strong></td><td>" . htmlspecialchars($player['position']) . "</td></tr>";
 echo "<tr><td><strong>Klub:</strong></td><td>" . htmlspecialchars($player['club']) . "</td></tr>";
@@ -39,7 +39,7 @@ if (!empty($player['image'])) {
     echo "<tr><td><strong>Slika:</strong></td><td><img src='img/players/" . htmlspecialchars($player['image']) . "' height='120'></td></tr>";
 }
 
-// --- Statistika v isti tabeli ---
+// statistika spodi
 $stats_sql = "SELECT * FROM stats WHERE id_p = $id";
 $stats_result = mysqli_query($link, $stats_sql);
 
@@ -66,7 +66,7 @@ $res = mysqli_query($link, "SELECT AVG(value) as povp FROM rating WHERE id_p = $
 $avg = mysqli_fetch_assoc($res)['povp'];
 echo "<p><strong>Povprečna ocena:</strong> " . ($avg ? round($avg, 2) : "Še ni ocen") . "</p>";
 
-// Obrazec za oceno in komentar
+//  za oceno in komentar
 if (isset($_SESSION['user_id'])) {
     if (isset($_POST['submit_feedback'])) {
         $uid = $_SESSION['user_id'];
