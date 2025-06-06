@@ -13,14 +13,14 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 <?php
 include_once 'header.php';
 
-// samo admin
+// sam admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     echo "<p>Dostop zavrnjen. Samo admin lahko vidi to stran.</p>";
     include 'footer.php';
     exit();
 }
 
-// BRISANJE IGRALCA
+// za brisat igraca
 if (isset($_POST['delete_player'])) {
     $id = (int)$_POST['id_pl'];
     mysqli_query($link, "DELETE FROM rating WHERE id_p = $id");
@@ -30,7 +30,7 @@ if (isset($_POST['delete_player'])) {
     echo "<p>Igralec izbrisan.</p>";
 }
 
-// BRISANJE KLUBA
+// brisat 
 if (isset($_POST['delete_club'])) {
     $id = (int)$_POST['id_c'];
     $players = mysqli_query($link, "SELECT id_pl FROM players WHERE id_c = $id");
@@ -45,14 +45,14 @@ if (isset($_POST['delete_club'])) {
     echo "<p>Klub izbrisan.</p>";
 }
 
-// DODAJ KLUB
+// za klub doat
 if (isset($_POST['dodaj_klub'])) {
     $ime = mysqli_real_escape_string($link, $_POST['ime_kluba']);
     mysqli_query($link, "INSERT INTO clubs (name) VALUES ('$ime')");
     echo "<p>Klub dodan.</p>";
 }
 
-// DODAJ IGRALCA
+// dodat igralca
 if (isset($_POST['dodaj_igralca'])) {
     $ime = $_POST['ime'];
     $poz = $_POST['pozicija'];
@@ -74,7 +74,6 @@ if (isset($_POST['dodaj_igralca'])) {
     echo "<p>Igralec dodan.</p>";
 }
 
-// DODAJ STATISTIKO
 if (isset($_POST['dodaj_statistiko'])) {
     $id_igr = (int)$_POST['id_igralca'];
     $aces = (int)$_POST['aces'];
@@ -82,7 +81,8 @@ if (isset($_POST['dodaj_statistiko'])) {
     $pass_err = (int)$_POST['passing_errors'];
     $hit_err = (int)$_POST['hitting_errors'];
 
-    // Preveri, da vrednosti niso negativne
+
+    
     if ($aces < 0 || $points < 0 || $pass_err < 0 || $hit_err < 0) {
         echo "<p style='color:red;'>Statistika ne sme vsebovati negativnih vrednosti.</p>";
     } else {
