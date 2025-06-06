@@ -10,7 +10,7 @@ if (!isset($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// Os podatki o igralcu
+// Osnovni podatki o igralcu
 $sql = "SELECT p.name, p.position, p.height, p.max_spike_reach, p.max_block_reach, p.weight, p.image, c.name AS club
         FROM players p
         LEFT JOIN clubs c ON p.id_c = c.id_c
@@ -26,47 +26,50 @@ if (!$player) {
 
 echo "<h2>" . htmlspecialchars($player['name']) . "</h2>";
 
-// tabela z podatki od zgori
-echo "<table border='1' cellpadding='5'>";
+// Slika od igrlca
+if (!empty($player['image'])) {
+    echo "<p><img src='img/players/" . htmlspecialchars($player['image']) . "' height='160' style='border:1px solid #ccc; padding:5px;'></p>";
+}
+
+// os podatki
+echo "<h3>Osnovni podatki</h3>";
+echo "<table border='1' cellpadding='6' cellspacing='0'>";
 echo "<tr><td><strong>Pozicija:</strong></td><td>" . htmlspecialchars($player['position']) . "</td></tr>";
 echo "<tr><td><strong>Klub:</strong></td><td>" . htmlspecialchars($player['club']) . "</td></tr>";
 echo "<tr><td><strong>Višina:</strong></td><td>" . htmlspecialchars($player['height']) . " cm</td></tr>";
-echo "<tr><td><strong>Spike:</strong></td><td>" . htmlspecialchars($player['max_spike_reach']) . " cm</td></tr>";
-echo "<tr><td><strong>Block:</strong></td><td>" . htmlspecialchars($player['max_block_reach']) . " cm</td></tr>";
+echo "<tr><td><strong>Max Spike Reach:</strong></td><td>" . htmlspecialchars($player['max_spike_reach']) . " cm</td></tr>";
+echo "<tr><td><strong>Max Block Reach:</strong></td><td>" . htmlspecialchars($player['max_block_reach']) . " cm</td></tr>";
 echo "<tr><td><strong>Teža:</strong></td><td>" . htmlspecialchars($player['weight']) . " kg</td></tr>";
+echo "</table><br>";
 
-if (!empty($player['image'])) {
-    echo "<tr><td><strong>Slika:</strong></td><td><img src='img/players/" . htmlspecialchars($player['image']) . "' height='120'></td></tr>";
-}
-
-// statistika spodi
+// Statistika
+echo "<h3>Statistika</h3>";
 $stats_sql = "SELECT * FROM stats WHERE id_p = $id";
 $stats_result = mysqli_query($link, $stats_sql);
 
 if (!$stats_result) {
-    echo "<tr><td colspan='2' style='color:red;'>Napaka pri pridobivanju statistike: " . mysqli_error($link) . "</td></tr>";
+    echo "<p style='color:red;'>Napaka pri pridobivanju statistike: " . mysqli_error($link) . "</p>";
 } else {
     $stats = mysqli_fetch_assoc($stats_result);
     if (!$stats) {
-        echo "<tr><td colspan='2'>Za tega igralca ni podatkov o statistiki.</td></tr>";
+        echo "<p>Za tega igralca ni statistike.</p>";
     } else {
-        echo "<tr><td colspan='2' style='background:#eee; text-align:center; font-weight:bold;'>Statistika</td></tr>";
+        echo "<table border='1' cellpadding='6' cellspacing='0'>";
         echo "<tr><td><strong>As servisi:</strong></td><td>" . htmlspecialchars($stats['aces'] ?? '0') . "</td></tr>";
         echo "<tr><td><strong>Točke:</strong></td><td>" . htmlspecialchars($stats['points'] ?? '0') . "</td></tr>";
         echo "<tr><td><strong>Napake pri podajah:</strong></td><td>" . htmlspecialchars($stats['passing_errors'] ?? '0') . "</td></tr>";
         echo "<tr><td><strong>Napake pri napadih:</strong></td><td>" . htmlspecialchars($stats['hitting_errors'] ?? '0') . "</td></tr>";
         echo "<tr><td><strong>Asistence:</strong></td><td>" . htmlspecialchars($stats['assists'] ?? '0') . "</td></tr>";
+        echo "</table><br>";
     }
 }
 
-echo "</table><br>";
-
-// Povprečna ocena
+// ocena
 $res = mysqli_query($link, "SELECT AVG(value) as povp FROM rating WHERE id_p = $id");
 $avg = mysqli_fetch_assoc($res)['povp'];
 echo "<p><strong>Povprečna ocena:</strong> " . ($avg ? round($avg, 2) : "Še ni ocen") . "</p>";
 
-//  za oceno in komentar
+// ocena pa komentar
 if (isset($_SESSION['user_id'])) {
     if (isset($_POST['submit_feedback'])) {
         $uid = $_SESSION['user_id'];
