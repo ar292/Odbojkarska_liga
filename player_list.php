@@ -26,7 +26,7 @@ $search = '';
 if (isset($_GET['search']) && trim($_GET['search']) !== '') {
     $search = mysqli_real_escape_string($link, trim($_GET['search']));
 
-    // Poizvedba z iskalnim kriterijem po imenu, poziciji ali klubu (LIKE %search%)
+    // search bar za ime, pozicijo pa klub
     $sql = "
     SELECT p.id_pl, p.name, p.position, p.image, c.name AS club, AVG(r.value) AS avg_rating
     FROM players p
@@ -37,7 +37,7 @@ if (isset($_GET['search']) && trim($_GET['search']) !== '') {
     ORDER BY p.name
     ";
 } else {
-    // Osnovna poizvedba brez iskanja
+    // navadna poizvedba
     $sql = "
     SELECT p.id_pl, p.name, p.position, p.image, c.name AS club, AVG(r.value) AS avg_rating
     FROM players p
