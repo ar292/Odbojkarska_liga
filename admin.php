@@ -13,14 +13,14 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 <?php
 include_once 'header.php';
 
-// sam admin
+// preveri ce si admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     echo "<p>Dostop zavrnjen. Samo admin lahko vidi to stran.</p>";
     include 'footer.php';
     exit();
 }
 
-// za brisat igraca
+// brisanje
 if (isset($_POST['delete_player'])) {
     $id = (int)$_POST['id_pl'];
     mysqli_query($link, "DELETE FROM rating WHERE id_p = $id");
@@ -30,7 +30,7 @@ if (isset($_POST['delete_player'])) {
     echo "<p>Igralec izbrisan.</p>";
 }
 
-// brisat 
+// klub
 if (isset($_POST['delete_club'])) {
     $id = (int)$_POST['id_c'];
     $players = mysqli_query($link, "SELECT id_pl FROM players WHERE id_c = $id");
@@ -45,14 +45,14 @@ if (isset($_POST['delete_club'])) {
     echo "<p>Klub izbrisan.</p>";
 }
 
-// za klub doat
+// DODAJ KLUB
 if (isset($_POST['dodaj_klub'])) {
     $ime = mysqli_real_escape_string($link, $_POST['ime_kluba']);
     mysqli_query($link, "INSERT INTO clubs (name) VALUES ('$ime')");
     echo "<p>Klub dodan.</p>";
 }
 
-// dodat igralca
+// za igralca
 if (isset($_POST['dodaj_igralca'])) {
     $ime = $_POST['ime'];
     $poz = $_POST['pozicija'];
@@ -74,27 +74,23 @@ if (isset($_POST['dodaj_igralca'])) {
     echo "<p>Igralec dodan.</p>";
 }
 
+// stistika ogralca
 if (isset($_POST['dodaj_statistiko'])) {
     $id_igr = (int)$_POST['id_igralca'];
     $aces = (int)$_POST['aces'];
     $points = (int)$_POST['points'];
     $pass_err = (int)$_POST['passing_errors'];
     $hit_err = (int)$_POST['hitting_errors'];
+    $assists = (int)$_POST['assists'];
 
-
-    
-    if ($aces < 0 || $points < 0 || $pass_err < 0 || $hit_err < 0) {
-        echo "<p style='color:red;'>Statistika ne sme vsebovati negativnih vrednosti.</p>";
+    $obstaja = mysqli_query($link, "SELECT * FROM stats WHERE id_p = $id_igr");
+    if (mysqli_num_rows($obstaja) == 0) {
+        $sql = "INSERT INTO stats (id_p, aces, points, passing_errors, hitting_errors, assists)
+                VALUES ($id_igr, $aces, $points, $pass_err, $hit_err, $assists)";
+        mysqli_query($link, $sql);
+        echo "<p>Statistika dodana.</p>";
     } else {
-        $obstaja = mysqli_query($link, "SELECT * FROM stats WHERE id_p = $id_igr");
-        if (mysqli_num_rows($obstaja) == 0) {
-            $sql = "INSERT INTO stats (id_p, aces, points, passing_errors, hitting_errors)
-                    VALUES ($id_igr, $aces, $points, $pass_err, $hit_err)";
-            mysqli_query($link, $sql);
-            echo "<p>Statistika dodana.</p>";
-        } else {
-            echo "<p style='color:red;'>Statistika za tega igralca že obstaja.</p>";
-        }
+        echo "<p style='color:red;'>Statistika za tega igralca že obstaja.</p>";
     }
 }
 ?>
@@ -108,12 +104,24 @@ if (isset($_POST['dodaj_statistiko'])) {
 <h2>Dodaj igralca</h2>
 <form method="POST" enctype="multipart/form-data">
     Ime: <input type="text" name="ime" required><br>
-    Pozicija: <input type="text" name="pozicija" required><br>
+
+    <label>Pozicija:</label><br>
+    <select name="pozicija" required>
+        <option value="">-- Izberi pozicijo --</option>
+        <option value="Podajalec">Podajalec</option>
+        <option value="Srednji bloker">Srednji bloker</option>
+        <option value="Korektor">Korektor</option>
+        <option value="Sprejemalec">Sprejemalec</option>
+        <option value="Libero">Libero</option>
+        <option value="Univerzalec">Univerzalec</option>
+    </select><br>
+
     Višina: <input type="number" name="visina"><br>
     Teža: <input type="number" name="teza"><br>
     Max spike: <input type="number" name="spike"><br>
     Max block: <input type="number" name="block"><br>
     Slika: <input type="file" name="slika"><br>
+
     Klub:
     <select name="klub" required>
         <?php
@@ -123,8 +131,10 @@ if (isset($_POST['dodaj_statistiko'])) {
         }
         ?>
     </select><br>
+
     <input type="submit" name="dodaj_igralca" value="Dodaj igralca">
 </form>
+
 
 <h2>Dodaj statistiko igralcu</h2>
 <form method="POST">
@@ -140,7 +150,8 @@ if (isset($_POST['dodaj_statistiko'])) {
     As servisi: <input type="number" name="aces" required><br>
     Točke: <input type="number" name="points" required><br>
     Napake pri podajah: <input type="number" name="passing_errors" required><br>
-    Napake pri napadih: <input type="number" name="hitting_errors" required><br><br>
+    Napake pri napadih: <input type="number" name="hitting_errors" required><br>
+    Asistence: <input type="number" name="assists" required><br><br>
     <input type="submit" name="dodaj_statistiko" value="Dodaj statistiko">
 </form>
 
