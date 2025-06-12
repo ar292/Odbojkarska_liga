@@ -50,7 +50,7 @@ if (!$result) {
 }
 ?>
 
-<table border="1" cellpadding="6" cellspacing="0">
+<table border="1">
 <tr>
     <th>Slika</th>
     <th>Ime</th>
