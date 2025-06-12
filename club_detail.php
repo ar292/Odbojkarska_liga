@@ -25,12 +25,12 @@ echo "<h2>" . htmlspecialchars($club['name']) . "</h2>";
 
 // Slika kluba (če obstaja)
 if (!empty($club['image'])) {
-    echo "<p><img src='img/clubs/" . htmlspecialchars($club['image']) . "' height='160' style='border:1px solid #ccc; padding:5px;'></p>";
+    echo "<p><img src='img/clubs/" . htmlspecialchars($club['image'])</p>";
 }
 
 // Podatki o klubu
 echo "<h3>Podatki o klubu</h3>";
-echo "<table border='1' cellpadding='6' cellspacing='0'>";
+echo "<table border='1'>";
 echo "<tr><td><strong>Datum ustanovitve:</strong></td><td>" . ($club['date_of_establishent'] !== '0000-00-00' && $club['date_of_establishent'] !== null ? $club['date_of_establishent'] : 'Ni podatka') . "</td></tr>";
 echo "<tr><td><strong>Lastnik:</strong></td><td>" . (!empty($club['owner']) ? htmlspecialchars($club['owner']) : 'Ni podatka') . "</td></tr>";
 echo "</table><br>";
