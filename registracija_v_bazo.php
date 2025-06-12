@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<p style='color:green;'>Uspešno registriran. Preusmerjanje na prijavo...</p>";
         header("refresh:2;url=login.php");
     } else {
-        echo "<p style='color:red;'>Napaka: " . mysqli_error($link) . "</p>";
+        echo "<p>Napaka: " . mysqli_error($link) . "</p>";
         header("refresh:4;url=registracija.php");
     }
 }
