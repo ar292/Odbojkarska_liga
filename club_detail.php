@@ -52,7 +52,7 @@ $players_result = mysqli_query($link, $players_sql);
 if (mysqli_num_rows($players_result) === 0) {
     echo "<p>V tem klubu ni igralcev.</p>";
 } else {
-    echo "<table border='1' cellpadding='6' cellspacing='0'>";
+    echo "<table border='1'>";
     echo "<tr>
             <th>Slika</th>
             <th>Ime</th>
