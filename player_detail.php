@@ -113,7 +113,7 @@ if (mysqli_num_rows($res) == 0) {
 } else {
     while ($c = mysqli_fetch_assoc($res)) {
         echo "<p><strong>" . htmlspecialchars($c['username']) . "</strong> (" . $c['date_of_creation'] . "):<br>";
-        echo nl2br(htmlspecialchars($c['content'])) . "</p><hr>";
+        echo (htmlspecialchars($c['content'])) . "</p><hr>";
     }
 }
 
