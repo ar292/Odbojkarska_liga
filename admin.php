@@ -13,7 +13,6 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 <?php
 include_once 'header.php';
 
-// samo admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     echo "<p>Dostop zavrnjen. Samo admin lahko vidi to stran.</p>";
     include 'footer.php';
@@ -62,12 +61,10 @@ if (isset($_POST['dodaj_klub'])) {
     echo "<p>Klub dodan.</p>";
 }
 
-
-
 // DODAJ IGRALCA
 if (isset($_POST['dodaj_igralca'])) {
-    $ime = $_POST['ime'];
-    $poz = $_POST['pozicija'];
+    $ime = mysqli_real_escape_string($link, $_POST['ime']);
+    $poz = mysqli_real_escape_string($link, $_POST['pozicija']);
     $visina = (int)$_POST['visina'];
     $teza = (int)$_POST['teza'];
     $spike = (int)$_POST['spike'];
@@ -94,7 +91,6 @@ if (isset($_POST['dodaj_statistiko'])) {
     $pass_err = (int)$_POST['passing_errors'];
     $hit_err = (int)$_POST['hitting_errors'];
 
-    // Preveri, da vrednosti niso negativne
     if ($aces < 0 || $points < 0 || $pass_err < 0 || $hit_err < 0) {
         echo "<p>Statistika ne sme vsebovati negativnih vrednosti.</p>";
     } else {
@@ -109,6 +105,23 @@ if (isset($_POST['dodaj_statistiko'])) {
         }
     }
 }
+
+// POSODOBI STATISTIKO
+if (isset($_POST['posodobi_statistiko'])) {
+    $id_igr = (int)$_POST['id_igralca'];
+    $aces = (int)$_POST['aces'];
+    $points = (int)$_POST['points'];
+    $pass_err = (int)$_POST['passing_errors'];
+    $hit_err = (int)$_POST['hitting_errors'];
+
+    if ($aces < 0 || $points < 0 || $pass_err < 0 || $hit_err < 0) {
+        echo "<p>Statistika ne sme vsebovati negativnih vrednosti.</p>";
+    } else {
+        $sql = "UPDATE stats SET aces = $aces, points = $points, passing_errors = $pass_err, hitting_errors = $hit_err WHERE id_p = $id_igr";
+        mysqli_query($link, $sql);
+        echo "<p>Statistika posodobljena.</p>";
+    }
+}
 ?>
 
 <h2>Dodaj klub</h2>
@@ -120,12 +133,9 @@ if (isset($_POST['dodaj_statistiko'])) {
     <input type="submit" name="dodaj_klub" value="Dodaj">
 </form>
 
-
-
 <h2>Dodaj igralca</h2>
 <form method="POST" enctype="multipart/form-data">
     Ime: <input type="text" name="ime" required><br>
-
     <label>Pozicija:</label><br>
     <select name="pozicija" required>
         <option value="">-- Izberi pozicijo --</option>
@@ -136,13 +146,11 @@ if (isset($_POST['dodaj_statistiko'])) {
         <option value="Libero">Libero</option>
         <option value="Univerzalec">Univerzalec</option>
     </select><br>
-
     Višina: <input type="number" name="visina"><br>
     Teža: <input type="number" name="teza"><br>
     Max spike: <input type="number" name="spike"><br>
     Max block: <input type="number" name="block"><br>
     Slika: <input type="file" name="slika"><br>
-
     Klub:
     <select name="klub" required>
         <?php
@@ -152,27 +160,71 @@ if (isset($_POST['dodaj_statistiko'])) {
         }
         ?>
     </select><br>
-
     <input type="submit" name="dodaj_igralca" value="Dodaj igralca">
 </form>
 
+<h2>Statistika</h2>
 
-<h2>Dodaj statistiko igralcu</h2>
+<h3>Dodaj statistiko igralcu</h3>
 <form method="POST">
     Igralec:
     <select name="id_igralca" required>
         <?php
-        $igralci = mysqli_query($link, "SELECT id_pl, name FROM players ORDER BY name");
+        $igralci = mysqli_query($link, "SELECT p.id_pl, p.name FROM players p LEFT JOIN stats s ON p.id_pl = s.id_p WHERE s.id_p IS NULL ORDER BY p.name");
         while ($igr = mysqli_fetch_assoc($igralci)) {
             echo "<option value='" . $igr['id_pl'] . "'>" . htmlspecialchars($igr['name']) . "</option>";
         }
         ?>
     </select><br><br>
-    As servisi: <input type="number" name="aces" required><br>
-    Točke: <input type="number" name="points" required><br>
-    Napake pri podajah: <input type="number" name="passing_errors" required><br>
-    Napake pri napadih: <input type="number" name="hitting_errors" required><br><br>
+    As servisi: <input type="number" name="aces" min="0" required><br>
+    Točke: <input type="number" name="points" min="0" required><br>
+    Napake pri podajah: <input type="number" name="passing_errors" min="0" required><br>
+    Napake pri napadih: <input type="number" name="hitting_errors" min="0" required><br><br>
     <input type="submit" name="dodaj_statistiko" value="Dodaj statistiko">
+</form>
+
+<h3>Uredi statistiko</h3>
+<form method="POST">
+    Igralec:
+    <select name="id_igralca" required>
+        <?php
+        $igralci = mysqli_query($link, "SELECT p.id_pl, p.name, s.aces, s.points, s.passing_errors, s.hitting_errors 
+                                      FROM players p 
+                                      JOIN stats s ON p.id_pl = s.id_p 
+                                      ORDER BY p.name");
+        while ($igr = mysqli_fetch_assoc($igralci)) {
+            echo "<option value='" . $igr['id_pl'] . "'";
+            if (isset($_POST['id_igralca']) && $_POST['id_igralca'] == $igr['id_pl']) {
+                echo " selected";
+            }
+            echo ">" . htmlspecialchars($igr['name']) . "</option>";
+        }
+        ?>
+    </select><br><br>
+    
+<?php
+    if (isset($_POST['id_igralca']) || isset($_GET['id'])) {
+        $id_igr = isset($_POST['id_igralca']) ? (int)$_POST['id_igralca'] : (int)$_GET['id'];
+        $statistika = mysqli_query($link, "SELECT * FROM stats WHERE id_p = $id_igr");
+        $stat = mysqli_fetch_assoc($statistika);
+        
+        if ($stat) {
+            echo "As servisi: <input type='number' name='aces' value='" . $stat['aces'] . "' min='0'><br>";
+            echo "Točke: <input type='number' name='points' value='" . $stat['points'] . "' min='0'><br>";
+            echo "Napake pri podajah: <input type='number' name='passing_errors' value='" . $stat['passing_errors'] . "' min='0'><br>";
+            echo "Napake pri napadih: <input type='number' name='hitting_errors' value='" . $stat['hitting_errors'] . "' min='0'><br><br>";
+        }
+        // prazna polja
+    } else {
+        echo "As servisi: <input type='number' name='aces' min='0'><br>";
+        echo "Točke: <input type='number' name='points' min='0'><br>";
+        echo "Napake pri podajah: <input type='number' name='passing_errors' min='0'><br>";
+        echo "Napake pri napadih: <input type='number' name='hitting_errors' min='0'><br><br>";
+    }
+    ?>
+
+
+    <input type="submit" name="posodobi_statistiko" value="Posodobi statistiko">
 </form>
 
 <h2>Obstoječi igralci</h2>
