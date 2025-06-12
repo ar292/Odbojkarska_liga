@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $check = mysqli_query($link, "SELECT id_u FROM users WHERE username = '$username'");
     if (mysqli_num_rows($check) > 0) {
-        echo "<p style='color:red;'>Uporabniško ime že obstaja.</p>";
+        echo "<p>Uporabniško ime že obstaja.</p>";
         header("refresh:3;url=registracija.php");
         exit();
     }
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             VALUES ('$username', '$email', '$geslo', $u_type_id)";
 
     if (mysqli_query($link, $sql)) {
-        echo "<p style='color:green;'>Uspešno registriran. Preusmerjanje na prijavo...</p>";
+        echo "<p>Uspešno registriran. Preusmerjanje na prijavo...</p>";
         header("refresh:2;url=login.php");
     } else {
         echo "<p>Napaka: " . mysqli_error($link) . "</p>";
