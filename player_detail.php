@@ -203,25 +203,25 @@ if (isset($_POST['posodobi_statistiko'])) {
     </select><br><br>
     
 <?php
-if (isset($_POST['id_igralca'])) {
-    $id_igr = (int)$_POST['id_igralca'];
-    $statistika = mysqli_query($link, "SELECT * FROM stats WHERE id_p = $id_igr");
-    $stat = mysqli_fetch_assoc($statistika);
-
-    if ($stat) {
-        echo "As servisi: <input type='number' name='aces' value='" . $stat['aces'] . "' min='0'><br>";
-        echo "Točke: <input type='number' name='points' value='" . $stat['points'] . "' min='0'><br>";
-        echo "Napake pri podajah: <input type='number' name='passing_errors' value='" . $stat['passing_errors'] . "' min='0'><br>";
-        echo "Napake pri napadih: <input type='number' name='hitting_errors' value='" . $stat['hitting_errors'] . "' min='0'><br><br>";
+    if (isset($_POST['id_igralca']) || isset($_GET['id'])) {
+        $id_igr = isset($_POST['id_igralca']) ? (int)$_POST['id_igralca'] : (int)$_GET['id'];
+        $statistika = mysqli_query($link, "SELECT * FROM stats WHERE id_p = $id_igr");
+        $stat = mysqli_fetch_assoc($statistika);
+        
+        if ($stat) {
+            echo "As servisi: <input type='number' name='aces' value='" . $stat['aces'] . "' min='0'><br>";
+            echo "Točke: <input type='number' name='points' value='" . $stat['points'] . "' min='0'><br>";
+            echo "Napake pri podajah: <input type='number' name='passing_errors' value='" . $stat['passing_errors'] . "' min='0'><br>";
+            echo "Napake pri napadih: <input type='number' name='hitting_errors' value='" . $stat['hitting_errors'] . "' min='0'><br><br>";
+        }
     } else {
-        // Če ni statistike, prikažemo prazne inpute
         echo "As servisi: <input type='number' name='aces' min='0'><br>";
         echo "Točke: <input type='number' name='points' min='0'><br>";
         echo "Napake pri podajah: <input type='number' name='passing_errors' min='0'><br>";
         echo "Napake pri napadih: <input type='number' name='hitting_errors' min='0'><br><br>";
     }
-}
-?>
+    ?>
+
 
     <input type="submit" name="posodobi_statistiko" value="Posodobi statistiko">
 </form>
