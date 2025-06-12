@@ -13,7 +13,6 @@ require_once 'db.php';
 
 <h2>Seznam klubov</h2>
 
-<!-- Iskalna vrstica -->
 <form method="GET" action="">
     <input type="text" name="search" placeholder="Išči klub ali lastnika" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
     <input type="submit" value="Išči">
