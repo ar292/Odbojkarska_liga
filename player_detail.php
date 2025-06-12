@@ -28,12 +28,12 @@ echo "<h2>" . htmlspecialchars($player['name']) . "</h2>";
 
 // Slika od igrlca
 if (!empty($player['image'])) {
-    echo "<p><img src='img/players/" . htmlspecialchars($player['image']) . "' height='160' style='border:1px solid #ccc; padding:5px;'></p>";
+    echo "<p><img src='img/players/" . htmlspecialchars($player['image']) . "</p>";
 }
 
 // os podatki
 echo "<h3>Osnovni podatki</h3>";
-echo "<table border='1' cellpadding='6' cellspacing='0'>";
+echo "<table border='1'>";
 echo "<tr><td><strong>Pozicija:</strong></td><td>" . htmlspecialchars($player['position']) . "</td></tr>";
 echo "<tr><td><strong>Klub:</strong></td><td>" . htmlspecialchars($player['club']) . "</td></tr>";
 echo "<tr><td><strong>Višina:</strong></td><td>" . htmlspecialchars($player['height']) . " cm</td></tr>";
@@ -48,13 +48,13 @@ $stats_sql = "SELECT * FROM stats WHERE id_p = $id";
 $stats_result = mysqli_query($link, $stats_sql);
 
 if (!$stats_result) {
-    echo "<p style='color:red;'>Napaka pri pridobivanju statistike: " . mysqli_error($link) . "</p>";
+    echo "<p>Napaka pri pridobivanju statistike: " . mysqli_error($link) . "</p>";
 } else {
     $stats = mysqli_fetch_assoc($stats_result);
     if (!$stats) {
         echo "<p>Za tega igralca ni statistike.</p>";
     } else {
-        echo "<table border='1' cellpadding='6' cellspacing='0'>";
+        echo "<table border='1'>";
         echo "<tr><td><strong>As servisi:</strong></td><td>" . htmlspecialchars($stats['aces'] ?? '0') . "</td></tr>";
         echo "<tr><td><strong>Točke:</strong></td><td>" . htmlspecialchars($stats['points'] ?? '0') . "</td></tr>";
         echo "<tr><td><strong>Napake pri podajah:</strong></td><td>" . htmlspecialchars($stats['passing_errors'] ?? '0') . "</td></tr>";
@@ -79,15 +79,15 @@ if (isset($_SESSION['user_id'])) {
         $chk = mysqli_query($link, "SELECT * FROM rating WHERE id_u=$uid AND id_p=$id");
         if (mysqli_num_rows($chk) == 0 && $val >= 1 && $val <= 5) {
             mysqli_query($link, "INSERT INTO rating (id_u, id_p, value) VALUES ($uid, $id, $val)");
-            echo "<p style='color:green;'>Hvala za oceno!</p>";
+            echo "<p>Hvala za oceno!</p>";
         } else {
-            echo "<p style='color:red;'>Igralca si že ocenil ali ocena ni veljavna.</p>";
+            echo "<p>Igralca si že ocenil ali ocena ni veljavna.</p>";
         }
 
         if (!empty($komentar)) {
             $komentar_safe = mysqli_real_escape_string($link, $komentar);
             mysqli_query($link, "INSERT INTO comments (id_u, id_p, content, date_of_creation) VALUES ($uid, $id, '$komentar_safe', NOW())");
-            echo "<p style='color:green;'>Hvala za komentar!</p>";
+            echo "<p>Hvala za komentar!</p>";
         }
     }
 
@@ -114,7 +114,7 @@ if (mysqli_num_rows($res) == 0) {
 } else {
     while ($c = mysqli_fetch_assoc($res)) {
         echo "<p><strong>" . htmlspecialchars($c['username']) . "</strong> (" . $c['date_of_creation'] . "):<br>";
-        echo nl2br(htmlspecialchars($c['content'])) . "</p><hr>";
+        echo (htmlspecialchars($c['content'])) . "</p><hr>";
     }
 }
 
