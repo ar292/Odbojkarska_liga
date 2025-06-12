@@ -48,20 +48,21 @@ $stats_sql = "SELECT * FROM stats WHERE id_p = $id";
 $stats_result = mysqli_query($link, $stats_sql);
 
 if (!$stats_result) {
-    echo "<p style='color:red;'>Napaka pri pridobivanju statistike: " . mysqli_error($link) . "</p>";
+    echo "<p>Napaka pri pridobivanju statistike: " . mysqli_error($link) . "</p>";
 } else {
     $stats = mysqli_fetch_assoc($stats_result);
     if (!$stats) {
         echo "<p>Za tega igralca ni statistike.</p>";
     } else {
-        echo "<table border='1' cellpadding='6' cellspacing='0'>";
-        echo "<tr><td><strong>As servisi:</strong></td><td>" . htmlspecialchars($stats['aces'] ?? '0') . "</td></tr>";
-        echo "<tr><td><strong>Točke:</strong></td><td>" . htmlspecialchars($stats['points'] ?? '0') . "</td></tr>";
-        echo "<tr><td><strong>Napake pri podajah:</strong></td><td>" . htmlspecialchars($stats['passing_errors'] ?? '0') . "</td></tr>";
-        echo "<tr><td><strong>Napake pri napadih:</strong></td><td>" . htmlspecialchars($stats['hitting_errors'] ?? '0') . "</td></tr>";
+        echo "<table border='1'>";
+        echo "<tr><td><strong>As servisi:</strong></td><td>" . htmlspecialchars(isset($stats['aces']) ? $stats['aces'] : '0') . "</td></tr>";
+        echo "<tr><td><strong>Točke:</strong></td><td>" . htmlspecialchars(isset($stats['points']) ? $stats['points'] : '0') . "</td></tr>";
+        echo "<tr><td><strong>Napake pri podajah:</strong></td><td>" . htmlspecialchars(isset($stats['passing_errors']) ? $stats['passing_errors'] : '0') . "</td></tr>";
+        echo "<tr><td><strong>Napake pri napadih:</strong></td><td>" . htmlspecialchars(isset($stats['hitting_errors']) ? $stats['hitting_errors'] : '0') . "</td></tr>";
         echo "</table><br>";
     }
 }
+
 
 // Povprečna ocena
 $res = mysqli_query($link, "SELECT AVG(value) as povp FROM rating WHERE id_p = $id");
