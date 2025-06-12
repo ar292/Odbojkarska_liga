@@ -96,7 +96,7 @@ if (isset($_POST['dodaj_statistiko'])) {
 
     // Preveri, da vrednosti niso negativne
     if ($aces < 0 || $points < 0 || $pass_err < 0 || $hit_err < 0) {
-        echo "<p style='color:red;'>Statistika ne sme vsebovati negativnih vrednosti.</p>";
+        echo "<p>Statistika ne sme vsebovati negativnih vrednosti.</p>";
     } else {
         $obstaja = mysqli_query($link, "SELECT * FROM stats WHERE id_p = $id_igr");
         if (mysqli_num_rows($obstaja) == 0) {
@@ -105,7 +105,7 @@ if (isset($_POST['dodaj_statistiko'])) {
             mysqli_query($link, $sql);
             echo "<p>Statistika dodana.</p>";
         } else {
-            echo "<p style='color:red;'>Statistika za tega igralca že obstaja.</p>";
+            echo "<p>Statistika za tega igralca že obstaja.</p>";
         }
     }
 }
