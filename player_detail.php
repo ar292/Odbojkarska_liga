@@ -28,7 +28,7 @@ echo "<h2>" . htmlspecialchars($player['name']) . "</h2>";
 
 // Slika igralca (če obstaja)
 if (!empty($player['image'])) {
-    echo "<p><img src='img/players/" . htmlspecialchars($player['image']) . "' height='160' style='border:1px solid #ccc; padding:5px;'></p>";
+    echo "<p><img src='img/players/" . htmlspecialchars($player['image']) . "></p>";
 }
 
 // Osnovni podatki
@@ -78,15 +78,15 @@ if (isset($_SESSION['user_id'])) {
         $chk = mysqli_query($link, "SELECT * FROM rating WHERE id_u=$uid AND id_p=$id");
         if (mysqli_num_rows($chk) == 0 && $val >= 1 && $val <= 5) {
             mysqli_query($link, "INSERT INTO rating (id_u, id_p, value) VALUES ($uid, $id, $val)");
-            echo "<p style='color:green;'>Hvala za oceno!</p>";
+            echo "<p>Hvala za oceno!</p>";
         } else {
-            echo "<p style='color:red;'>Igralca si že ocenil ali ocena ni veljavna.</p>";
+            echo "<p>Igralca si že ocenil ali ocena ni veljavna.</p>";
         }
 
         if (!empty($komentar)) {
             $komentar_safe = mysqli_real_escape_string($link, $komentar);
             mysqli_query($link, "INSERT INTO comments (id_u, id_p, content, date_of_creation) VALUES ($uid, $id, '$komentar_safe', NOW())");
-            echo "<p style='color:green;'>Hvala za komentar!</p>";
+            echo "<p>Hvala za komentar!</p>";
         }
     }
 
